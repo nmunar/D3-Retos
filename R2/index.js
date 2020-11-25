@@ -1,9 +1,13 @@
-const URL = "https://gist.githubusercontent.com/josejbocanegra/d3b9e9775ec3a646603f49bc8d3fb90f/raw/3a39300c2a2ff8644a52e22228e900251ec5880a/population.json"
+const URL = "https://gist.githubusercontent.com/josejbocanegra/000e838b77c6ec8e5d5792229c1cdbd0/raw/83cd9161e28e308ef8c5363e217bad2b6166f21a/countries.json"
 d3.json(URL).then(data=>{
-    let max = 0;
+    let maxX = 0;
+    let maxY = 0;
     data.forEach((item) => {
-        if (item.value >= max) {
-          max = item.value;
+        if (item.purchasingpower >= maxX) {
+          maxX = item.purchasingpower;
+        }
+        if (item.lifeexpectancy >= maxY) {
+          maxY = item.lifeexpectancy;
         }
       });
     const canvas = d3.select("#canvas");
@@ -20,18 +24,16 @@ d3.json(URL).then(data=>{
 
     let g = svg.append("g").attr("transform",`translate(${margin.left},${margin.top})`);
 
-    const x = d3.scaleLinear().domain([0,max]).range([0,iwidth]);
-    const y = d3.scaleBand().domain(data.map(d=>d.name)).range([iheight,0]).padding(0);    
+    const x = d3.scaleLinear().domain([0,34435.37]).range([0,iwidth]);
+    const y = d3.scaleBand().domain(data.map(d=>d.lifeexpectancy)).range([iheight,0]).padding(0);    
 
-    const bars = g.selectAll("rect").data(data);
+    const bars = g.selectAll("circle").data(data);
     
-    bars.enter().append("rect")
-        .attr("class","bar")
+    bars.enter().append("circle")
         .style("fill","steelblue")
-        .attr("x",0)
-        .attr("y",d=>y(d.name))
-        .attr("width",d=>x(d.value))
-        .attr("height",y.bandwidth()-10);
+        .attr("cx",d=>x(d.purchasingpower))
+        .attr("cy",d=>y(d.lifeexpectancy))
+        .attr("r",d=>(d.population*0.0000009));
     
     g.append("g")
             .classed("x--axis",true)
